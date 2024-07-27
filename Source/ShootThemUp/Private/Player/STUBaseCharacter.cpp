@@ -1,13 +1,14 @@
 // Shoot Them Up Game.
 
-
 #include "Player/STUBaseCharacter.h"
-
 #include "STUCharacterMovementComponent.h"
+#include "STUHealthComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/TextRenderComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
-// Sets default values
+DEFINE_LOG_CATEGORY_STATIC(BaseCharacterLog, All, All);
+
 ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit
         .SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -22,21 +23,33 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
+
+    HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
+
+    HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
+    HealthTextComponent->SetupAttachment(GetRootComponent());
 }
 
-// Called when the game starts or when spawned
 void ASTUBaseCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    check(HealthComponent);
+    check(HealthTextComponent);
+    check(GetCharacterMovement());
+
+    // Регистрируем события для здоровья
+    OnHealthChangedHandler(HealthComponent->GetHealth()); // иначе будет 0 в текст боксе
+    HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeathHandler);
+    HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChangedHandler);
+    LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
 }
 
-// Called every frame
 void ASTUBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
 void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -101,6 +114,40 @@ float ASTUBaseCharacter::GetMovementDirection() const
     {
         return FMath::RadiansToDegrees(AngleBetween);
     }
-    
+
     return FMath::RadiansToDegrees(AngleBetween) * FMath::Sign(CrossProduct.Z);
+}
+
+// Смерть персонажа
+void ASTUBaseCharacter::OnDeathHandler()
+{
+    UE_LOG(BaseCharacterLog, Display, TEXT("Player %s is dead"), *GetName());
+
+    PlayAnimMontage(DeathAnimMontage);
+    GetCharacterMovement()->DisableMovement();
+    SetLifeSpan(5.0f);
+
+    if (Controller)
+    {
+        Controller->ChangeState(NAME_Spectating);
+    }
+}
+
+// Текст здоровья
+void ASTUBaseCharacter::OnHealthChangedHandler(float Health)
+{
+    HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
+}
+
+// Урон при падении
+void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
+{
+    const auto FallVelocityZ = -GetCharacterMovement()->Velocity.Z;
+    if (FallVelocityZ < LandedDamageVelocity.X)
+        return;
+
+    const auto FinalDamage = FMath::GetMappedRangeValueClamped(LandedDamageVelocity, LandedDamage, FallVelocityZ);
+    TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
+
+    UE_LOG(BaseCharacterLog, Display, TEXT("Fall Velocity: %f;\tFall Damage: %f;"), FallVelocityZ, FinalDamage);
 }
