@@ -30,12 +30,13 @@ void USTUHealthComponent::OnTakeAnyDamageHandle(AActor* DamagedActor, float Dama
 {
     if (Damage <= 0.0f || IsDead() || !GetWorld())
         return;
-
+    
     SetHealth(Health - Damage);
 
     if (IsDead())
     {
         OnDeath.Broadcast(); // Вызываем смерть персонажа
+        GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
     }
     else if (AutoHeal)
     {
