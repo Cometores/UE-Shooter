@@ -5,6 +5,7 @@
 #include "STUHealthComponent.h"
 #include "STUWeaponComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -139,6 +140,7 @@ void ASTUBaseCharacter::OnDeathHandler()
     {
         Controller->ChangeState(NAME_Spectating);
     }
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 }
 
 // Текст здоровья
