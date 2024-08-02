@@ -24,37 +24,14 @@ void ASTUBaseWeapon::BeginPlay()
 
 void ASTUBaseWeapon::StartFire()
 {
-    MakeShot();
-    GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTUBaseWeapon::MakeShot, TimeBetweenShots, true);
 }
 
 void ASTUBaseWeapon::StopFire()
 {
-    GetWorldTimerManager().ClearTimer(ShotTimerHandle);
 }
 
 void ASTUBaseWeapon::MakeShot()
 {
-    if (!GetWorld())
-        return;
-
-    // DrawTraceForGun();
-
-    FVector TraceStart, TraceEnd;
-    if(!GetTraceData(TraceStart, TraceEnd))
-        return;
-
-    FHitResult HitResult;
-    MakeHit(HitResult, TraceStart, TraceEnd);
-
-    if(HitResult.bBlockingHit)
-    {
-        MakeDamage(HitResult);
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-        DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
-        
-        UE_LOG(BaseWeaponLog, Display, TEXT("Bone: %s"), *HitResult.BoneName.ToString());
-    }
 }
 
 void ASTUBaseWeapon::DrawTraceForGun()
@@ -67,7 +44,7 @@ void ASTUBaseWeapon::DrawTraceForGun()
     FHitResult HitResult;
     GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
 
-    if(HitResult.bBlockingHit)
+    if (HitResult.bBlockingHit)
     {
         DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 3.0f, 0, 3.0f);
         DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
@@ -78,17 +55,18 @@ void ASTUBaseWeapon::DrawTraceForGun()
 APlayerController* ASTUBaseWeapon::GetPlayerController() const
 {
     const auto Player = Cast<ACharacter>(GetOwner());
-    if(!Player)
+    if (!Player)
         return nullptr;
-    
+
     return Player->GetController<APlayerController>();
 }
 
 bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
 {
     const auto Controller = GetPlayerController();
-    if (!Controller) return false;
-    
+    if (!Controller)
+        return false;
+
     Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
     return true;
 }
@@ -102,35 +80,34 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
 {
     FVector ViewLocation;
     FRotator ViewRotation;
-    if(!GetPlayerViewPoint(ViewLocation, ViewRotation))
+    if (!GetPlayerViewPoint(ViewLocation, ViewRotation))
         return false;
-    
-    TraceStart = ViewLocation;
 
-    // spreading the shots
-    const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
-    const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
-    
+    TraceStart = ViewLocation;
+    const FVector ShootDirection = ViewRotation.Vector();
+
     TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
-    
+
     return true;
 }
 
 void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd) const
 {
-    if(!GetWorld()) return;
+    if (!GetWorld())
+        return;
 
     // игнорируем получение урона обладателем оружия
     FCollisionQueryParams CollisionParams;
     CollisionParams.AddIgnoredActor(GetOwner());
-    
+
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams);
 }
 
 void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult)
 {
     const auto DamagedActor = HitResult.GetActor();
-    if(!DamagedActor) return;
+    if (!DamagedActor)
+        return;
 
     DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
 }
