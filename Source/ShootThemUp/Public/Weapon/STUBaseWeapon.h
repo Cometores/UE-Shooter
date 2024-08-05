@@ -11,7 +11,7 @@ class USkeletalMeshComponent;
 USTRUCT(BlueprintType)
 struct FAmmoData
 {
-    GENERATED_BODY()
+    GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
     int32 Bullets;
