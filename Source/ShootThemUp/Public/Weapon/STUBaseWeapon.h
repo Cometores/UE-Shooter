@@ -25,6 +25,8 @@ public:
     void ChangeClip();
     bool CanReload() const;
 
+    FWeaponUIData GetUIData() const {return UIData;}
+
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
     USkeletalMeshComponent* WeaponMesh;
@@ -40,6 +42,9 @@ protected:
     
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     float DamageAmount = 10.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="UI")
+    FWeaponUIData UIData;
 
     virtual void BeginPlay() override;
 

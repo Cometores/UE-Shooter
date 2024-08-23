@@ -128,6 +128,18 @@ void USTUWeaponComponent::Reload()
     ChangeClip();
 }
 
+bool USTUWeaponComponent::GetWeaponUIData(FWeaponUIData& UIData) const
+{
+
+    if (CurrentWeapon)
+    {
+        UIData = CurrentWeapon->GetUIData();
+        return true;
+    }
+    return false;
+
+}
+
 void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
 {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
@@ -150,9 +162,10 @@ void USTUWeaponComponent::InitAnimations()
         checkNoEntry();
     }
 
-    for(auto OneWeaponData : WeaponData)
+    for (auto OneWeaponData : WeaponData)
     {
-        auto ReloadFinishedNotify = AnimUtils::FindNotifyByClass<USTUReloadFinishedAnimNotify>(OneWeaponData.ReloadAnimMontage);
+        auto ReloadFinishedNotify = AnimUtils::FindNotifyByClass<USTUReloadFinishedAnimNotify>(
+            OneWeaponData.ReloadAnimMontage);
         if (ReloadFinishedNotify)
         {
             ReloadFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnReloadFinished);

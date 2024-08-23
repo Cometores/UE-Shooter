@@ -22,6 +22,8 @@ public:
     void NextWeapon();
     void Reload();
 
+    bool GetWeaponUIData(FWeaponUIData& UIData) const;
+
 protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

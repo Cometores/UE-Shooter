@@ -2,6 +2,8 @@
 
 
 #include "UI/STUPlayerHUDWidget.h"
+
+#include "STUWeaponComponent.h"
 #include "Components//STUHealthComponent.h"
 
 float USTUPlayerHUDWidget::GetHealthPercent() const
@@ -16,4 +18,18 @@ float USTUPlayerHUDWidget::GetHealthPercent() const
         return 0.0f;
 
     return HealthComponent->GetHealthPercent();
+}
+
+bool USTUPlayerHUDWidget::GetWeaponUIData(FWeaponUIData& UIData) const
+{
+    const auto Player = GetOwningPlayerPawn();
+    if (!Player)
+        return false;
+
+    const auto Component = Player->GetComponentByClass(USTUWeaponComponent::StaticClass());
+    const auto WeaponComponent = Cast<USTUWeaponComponent>(Component);
+    if (!WeaponComponent)
+        return false;
+
+    return WeaponComponent->GetWeaponUIData(UIData);
 }
