@@ -18,14 +18,15 @@ public:
     ASTUBaseWeapon();
 
     FOnClipEmptySignature OnClipEmpty;
-    
+
     virtual void StartFire();
     virtual void StopFire();
-    
+
     void ChangeClip();
     bool CanReload() const;
 
-    FWeaponUIData GetUIData() const {return UIData;}
+    FWeaponUIData GetUIData() const { return UIData; }
+    FAmmoData GetAmmoData() const { return  CurrentAmmo; }
 
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
@@ -38,8 +39,8 @@ protected:
     float TraceMaxDistance = 1500.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
-    FAmmoData DefaultAmmo{15,10,false};
-    
+    FAmmoData DefaultAmmo{15, 10, false};
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     float DamageAmount = 10.0f;
 

@@ -23,6 +23,7 @@ public:
     void Reload();
 
     bool GetWeaponUIData(FWeaponUIData& UIData) const;
+    bool GetWeaponAmmoData(FAmmoData& AmmoData) const;
 
 protected:
     virtual void BeginPlay() override;

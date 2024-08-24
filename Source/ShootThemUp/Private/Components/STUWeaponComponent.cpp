@@ -130,14 +130,22 @@ void USTUWeaponComponent::Reload()
 
 bool USTUWeaponComponent::GetWeaponUIData(FWeaponUIData& UIData) const
 {
-
     if (CurrentWeapon)
     {
         UIData = CurrentWeapon->GetUIData();
         return true;
     }
     return false;
+}
 
+bool USTUWeaponComponent::GetWeaponAmmoData(FAmmoData& AmmoData) const
+{
+    if (CurrentWeapon)
+    {
+        AmmoData = CurrentWeapon->GetAmmoData();
+        return true;
+    }
+    return false;
 }
 
 void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
