@@ -1,9 +1,9 @@
 // Shoot Them Up Game.
 
+#include "Pickups/STUAmmoPickup.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/STUWeaponComponent.h"
 #include "STUUtils.h"
-#include "Pickups/STUAmmoPickup.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogAmmoPickup, All, All);
 
