@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "STUProjectile.generated.h"
 
+class USTUWeaponFXComponent;
 class UProjectileMovementComponent;
 class USphereComponent;
 
@@ -37,6 +38,9 @@ protected:
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category="Weapon")
     float LifeSeconds = 5.0f;
+    
+    UPROPERTY(VisibleAnywhere, Category="VFX")
+    USTUWeaponFXComponent* WeaponFXComponent;
     
     UFUNCTION()
     virtual void BeginPlay() override;
