@@ -43,6 +43,7 @@ void ASTUBaseCharacter::BeginPlay()
     check(HealthComponent);
     check(HealthTextComponent);
     check(GetCharacterMovement());
+    check(GetMesh());
 
     // Регистрируем события для здоровья
     OnHealthChangedHandler(HealthComponent->GetHealth()); // иначе будет 0 в текст боксе
@@ -135,7 +136,7 @@ void ASTUBaseCharacter::OnDeathHandler()
 {
     UE_LOG(BaseCharacterLog, Display, TEXT("Player %s is dead"), *GetName());
 
-    PlayAnimMontage(DeathAnimMontage);
+    //PlayAnimMontage(DeathAnimMontage);
     GetCharacterMovement()->DisableMovement();
     SetLifeSpan(LifeSpanOnDeath);
 
@@ -145,6 +146,9 @@ void ASTUBaseCharacter::OnDeathHandler()
     }
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
     WeaponComponent->StopFire();
+
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetMesh()->SetSimulatePhysics(true);
 }
 
 // Текст здоровья
