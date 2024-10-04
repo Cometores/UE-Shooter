@@ -46,7 +46,7 @@ void ASTUBaseCharacter::BeginPlay()
     check(GetMesh());
 
     // Регистрируем события для здоровья
-    OnHealthChangedHandler(HealthComponent->GetHealth()); // иначе будет 0 в текст боксе
+    OnHealthChangedHandler(HealthComponent->GetHealth(), 0.0f); // иначе будет 0 в текст боксе
     HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeathHandler);
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChangedHandler);
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
@@ -152,7 +152,7 @@ void ASTUBaseCharacter::OnDeathHandler()
 }
 
 // Текст здоровья
-void ASTUBaseCharacter::OnHealthChangedHandler(float Health)
+void ASTUBaseCharacter::OnHealthChangedHandler(float Health, float HelthDelta)
 {
     HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
 }
