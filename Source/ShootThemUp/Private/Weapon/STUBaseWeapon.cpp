@@ -4,6 +4,8 @@
 #include "Weapon/STUBaseWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(BaseWeaponLog, All, All);
 
@@ -22,7 +24,7 @@ void ASTUBaseWeapon::BeginPlay()
     check(WeaponMesh);
     checkf(DefaultAmmo.Bullets > 0, TEXT("Bullets count couldn't be less or equal zero"));
     checkf(DefaultAmmo.Clips > 0, TEXT("Clips count couldn't be less or equal zero"));
-    
+
     CurrentAmmo = DefaultAmmo;
 }
 
@@ -119,15 +121,15 @@ void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult)
 
 void ASTUBaseWeapon::DecreaseAmmo()
 {
-    if(CurrentAmmo.Bullets == 0)
+    if (CurrentAmmo.Bullets == 0)
     {
         UE_LOG(BaseWeaponLog, Display, TEXT("Clip is empty"));
         return;
     }
-    
+
     CurrentAmmo.Bullets--;
 
-    if(IsClipEmpty() && !IsAmmoEmpty())
+    if (IsClipEmpty() && !IsAmmoEmpty())
     {
         StopFire();
         OnClipEmpty.Broadcast(this);
@@ -151,9 +153,9 @@ bool ASTUBaseWeapon::IsAmmoFull() const
 
 void ASTUBaseWeapon::ChangeClip()
 {
-    if(!CurrentAmmo.Infinite)
+    if (!CurrentAmmo.Infinite)
     {
-        if(CurrentAmmo.Clips == 0)
+        if (CurrentAmmo.Clips == 0)
         {
             UE_LOG(BaseWeaponLog, Display, TEXT("No more clips"));
             return;
@@ -172,10 +174,10 @@ bool ASTUBaseWeapon::CanReload() const
 
 bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
 {
-    if(CurrentAmmo.Infinite || IsAmmoFull() || ClipsAmount <= 0)
+    if (CurrentAmmo.Infinite || IsAmmoFull() || ClipsAmount <= 0)
         return false;
 
-    if(IsAmmoEmpty())
+    if (IsAmmoEmpty())
     {
         CurrentAmmo.Clips = FMath::Clamp(ClipsAmount, 0, DefaultAmmo.Clips + 1);
         OnClipEmpty.Broadcast(this);
@@ -206,4 +208,14 @@ void ASTUBaseWeapon::LogAmmo()
     FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + " / ";
     AmmoInfo += CurrentAmmo.Infinite ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
     UE_LOG(BaseWeaponLog, Display, TEXT("%s"), *AmmoInfo);
+}
+
+UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()
+{
+    return UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleFX,
+        WeaponMesh,
+        MuzzleSocketName,
+        FVector::ZeroVector,
+        FRotator::ZeroRotator,
+        EAttachLocation::SnapToTarget, true);
 }
