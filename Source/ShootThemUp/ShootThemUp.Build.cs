@@ -10,7 +10,12 @@ public class ShootThemUp : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"Core", "CoreUObject", "Engine", "InputCore", "Niagara", "PhysicsCore"
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"Niagara", 
+			"PhysicsCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
@@ -18,7 +23,15 @@ public class ShootThemUp : ModuleRules
 		// Иногда автоматически не распознаются импорты
 		PublicIncludePaths.AddRange(new string[]
 		{
-			"ShootThemUp/Public/Player", "ShootThemUp/Public/Components"
+			"ShootThemUp/Public/Player", 
+			"ShootThemUp/Public/Components",
+			"ShootThemUp/Public/Dev",
+			"ShootThemUp/Public/Weapon",
+			"ShootThemUp/Public/UI",
+			"ShootThemUp/Public/Animations",
+			"ShootThemUp/Public/Pickups",
+			"ShootThemUp/Public/Weapon/Components",
+			"ShootThemUp/Public/AI",
 		});
 
 		// Uncomment if you are using Slate UI
