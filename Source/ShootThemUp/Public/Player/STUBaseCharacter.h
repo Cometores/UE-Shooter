@@ -51,6 +51,8 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category="Damage")
     FVector2D LandedDamage = FVector2D(10.0f, 100.0f);
 
+    virtual void OnDeathHandler();
+
 public:
     virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -71,7 +73,6 @@ private:
     void OnStartRunning();
     void OnStopRunning();
 
-    void OnDeathHandler();
     void OnHealthChangedHandler(float Health, float HealthDelta);
 
     UFUNCTION()
